@@ -1,4 +1,5 @@
 import cv2
+from cv2 import rectangle
 from matplotlib import pyplot as plt
 
 class ImageOperator:
@@ -7,8 +8,14 @@ class ImageOperator:
             initialize the image path and image object
             imagePath = 'path of the image'
         '''
+        print(cv2.__version__)
         self.imagePath = imagePath 
         self.img = cv2.imread(self.imagePath)
+
+        self.shapeDict = {
+            'circle' : '''cv2.circle(*args)''',
+            'rectangle' : '''cv2.rectangle(*args)'''
+        }
         
     def getImgShape(self):
         '''
@@ -69,11 +76,28 @@ class ImageOperator:
         cv2.imwrite(savePath, self.img)
         
     
-    def putShape(self, shape, color, thickness, inplace = True):
+    def putShape(self, shape, args, inplace = True):
         '''
             Put the shape on the image
+            shape = 'shape to be drawn'
+            args = 'list of the argument to be passed to the function'
+            returns : 'image with the shape'
+
+            Note : Please have a look at the opencv documentation for the 'args' 
+            'args' must match with the number of parameters with the respective function
         '''
-        pass
+        if inplace:
+            args = [self.img] +args
+        else:
+            args = [self.img.copy()] + args
+        
+        if shape in self.shapeDict.keys():
+            img = eval(self.shapeDict[shape])
+            return img
+        else:
+            print('Please check for shape')
+            print('we provide following shapes \n' + '\n'.join(self.shapeDict.keys()))
+            return None
     
     def monoColor(self):
         '''
@@ -92,12 +116,15 @@ class ImageOperator:
     def showImageNotebook(self, label = 'image'):
         '''
             show the image on Jupyter Notebook
+            problem with plt imshow 
+            image is change
         '''
         plt.imshow(self.img)
+        plt.show()
     
     
 if __name__ == '__main__':
-    ImgOperator = ImageOperator('Image\\test.jpg')    
+    ImgOperator = ImageOperator('/home/adithya/imp_repos/opencvLearning/Image/test.jpg')    
     
     ImgOperator.showImageCLI(label = 'Original Image')
     
@@ -115,5 +142,5 @@ if __name__ == '__main__':
     
     ImgOperator.putLabel('Rose', (50, 50), color = (0, 255, 0), thickness = 2, inplace = True)
     
-    ImgOperator.showImageCLI(label = 'Image with Label')
+    ImgOperator.showImageNotebook(label = 'Image with Label')
     
