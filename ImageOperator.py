@@ -1,5 +1,4 @@
 import cv2
-from cv2 import rectangle
 from matplotlib import pyplot as plt
 
 class ImageOperator:
